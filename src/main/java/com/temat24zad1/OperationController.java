@@ -14,7 +14,7 @@ import java.util.Optional;
 @Controller
 public class OperationController {
 
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
     public OperationController(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
@@ -32,12 +32,6 @@ public class OperationController {
         return "/add";
     }
 
-    @PostMapping("/save")
-    String saveTransaction(@ModelAttribute Transaction transaction) {
-        int add = transactionRepository.add(transaction);
-        return (add > 0) ? "redirect:/confirmation" : "redirect:/error";
-    }
-
     @GetMapping("/confirmation")
     public String confirmation() {
         return "/confirmation";
@@ -53,6 +47,12 @@ public class OperationController {
     @GetMapping("/update")
     public String update() {
         return "/update";
+    }
+
+    @PostMapping("/save")
+    String saveTransaction(@ModelAttribute Transaction transaction) {
+        int add = transactionRepository.add(transaction);
+        return (add > 0) ? "redirect:/confirmation" : "redirect:/error";
     }
 
     @GetMapping("/updateById")
