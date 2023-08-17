@@ -12,7 +12,7 @@ public class TransactionRepository {
 
     Connection connection;
 
-    public TransactionRepository(){
+    public TransactionRepository() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(
@@ -33,9 +33,10 @@ public class TransactionRepository {
             ps.setInt(1, Math.toIntExact(id));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return Optional.of(new Transaction(rs.getLong(1), TransactionType.transactionTypeByString(rs.getString(2))
-                        , rs.getString(3), rs.getDouble(4)
-                        , LocalDate.parse(rs.getString(5))));
+                return Optional.of(new Transaction(rs.getLong(1),
+                        TransactionType.transactionTypeByString(rs.getString(2)),
+                        rs.getString(3), rs.getDouble(4),
+                        LocalDate.parse(rs.getString(5))));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -51,11 +52,11 @@ public class TransactionRepository {
             ps.setString(1, type.getDescription());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                transactions.add(new Transaction(rs.getLong(1)
-                        , TransactionType.transactionTypeByString(rs.getString(2))
-                        , rs.getString(3)
-                        , rs.getDouble(4)
-                        , LocalDate.parse(rs.getString(5))));
+                transactions.add(new Transaction(rs.getLong(1),
+                        TransactionType.transactionTypeByString(rs.getString(2)),
+                        rs.getString(3),
+                        rs.getDouble(4),
+                        LocalDate.parse(rs.getString(5))));
             }
         } catch (SQLException e) {
             throw new RuntimeException();
@@ -64,7 +65,7 @@ public class TransactionRepository {
     }
 
     public int delete(int id) {
-        int update = 0;
+        int update;
         try {
             String sql = "DELETE FROM transaction WHERE id = ?;";
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -78,7 +79,7 @@ public class TransactionRepository {
 
     private int addTransaction(Transaction transaction) {
         String sql = "INSERT INTO transaction (type, description, amount, date) VALUES (?, ?, ?, ?);";
-        int update = 0;
+        int update;
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, transaction.getTransactionType().getDescription());
@@ -92,10 +93,9 @@ public class TransactionRepository {
         return update;
     }
 
-
     private int updateTransaction(Transaction transaction) {
         String sql = "UPDATE transaction SET type = ?, description = ?, amount = ?, date = ? WHERE id = ?;";
-        int update = 0;
+        int update;
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, transaction.getTransactionType().getDescription());
