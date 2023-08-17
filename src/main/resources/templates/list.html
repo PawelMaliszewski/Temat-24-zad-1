@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Transakcje</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="container" style="margin-top: 25px">
+        <h3>Lisa operacji</h3>
+        <hr>
+        <h2 class="text-center" style="color: red" th:if="${transactions.isEmpty()}">Brak Transakcji</h2>
+        <table class="table table-bordered table-striped" id="lista-wpłat" th:if="${!transactions.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Typ transakcji</th>
+                <th>Opis</th>
+                <th>Kwota</th>
+                <th>Data</th>
+            </tr>
+
+            </thead>
+            <tbody>
+            <tr th:each="transacion: ${transactions}">
+                <td th:text="*{transacion.id}"></td>
+                <td th:text="*{transacion.transactionType.getDescription()}"></td>
+                <td th:text="*{transacion.description}"></td>
+                <td th:text="*{transacion.amount}"></td>
+                <td th:text="*{transacion.date}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

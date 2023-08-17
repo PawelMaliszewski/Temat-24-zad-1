@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title>Transakcje</title>
+</head>
+<body>
+<main layout:fragment="content">
+  <h1 th:if="${no_id_found != null}" style="margin-top: 25px"
+      class="fragments-header-text text-center text-danger">Nie odnaleziono transakcji o takim id</h1>
+  <div class="contactForm" th:fragment="contact" th:if="${no_id_found == null}" >
+    <h2 style="margin-top: 25px" th:text="(${transaction.id} == null) ? 'Dodaj Transakcje' : 'Modyfikuj Transakcje'"></h2>
+    <form  action="/save" th:object="${transaction}" method="post">
+      <input type="hidden" th:field="*{id}">
+      <label for="prodCat">Wybierz typ transakcji</label>
+      <select th:field="*{transactionType}" id="prodCat" class="form-select form-select-sm mb-2 w-25"
+              aria-label="Small select example" required>
+        <option value="">Wybierz kategorie</option>
+        <option name="Kategoria"
+                th:each="type: ${T(com.temat24zad1.TransactionType).values()}"
+                th:value="${type.name()}"
+                th:text="${type.getDescription()}"
+        ></option>
+      </select>
+      <div class="mb-3">
+        <label for="description" class="form-label">Opis</label>
+        <textarea  th:field="*{description}"  class="form-control" id="description" rows="4" cols="50"
+                   placeholder="Opis transakcji np. zakupy art. spożywczych" required></textarea>
+      </div>
+      <div class="mb-3 w-25">
+        <label for="transaction_amount" class="form-label">Wpisz kwotę transakcji</label>
+        <input th:field="*{amount}" type="number" step=".01" class="form-control"
+               id="transaction_amount" min="0.01" required>
+      </div>
+      <div class="mb-2 w-25">
+        <label for="transaction_date"  class="form-label" >Wybierz Date</label>
+        <input type="date"  th:field="*{date}"
+        class="form-control" id="transaction_date" required >
+      </div>
+      <button type="submit" class="btn btn-primary">Zapisz</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>
