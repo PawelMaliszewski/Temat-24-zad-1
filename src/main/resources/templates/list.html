@@ -8,7 +8,7 @@
 <body>
 <main layout:fragment="content">
     <div class="container" style="margin-top: 25px">
-        <h3>Lisa operacji</h3>
+        <h3>Lista operacji</h3>
         <hr>
         <h2 class="text-center" style="color: red" th:if="${transactions.isEmpty()}">Brak Transakcji</h2>
         <table class="table table-bordered table-striped" id="lista-wpłat" th:if="${!transactions.isEmpty()}">
@@ -19,20 +19,35 @@
                 <th>Opis</th>
                 <th>Kwota</th>
                 <th>Data</th>
+                <th>Akcje</th>
             </tr>
 
             </thead>
             <tbody>
-            <tr th:each="transacion: ${transactions}">
-                <td th:text="*{transacion.id}"></td>
-                <td th:text="*{transacion.transactionType.getDescription()}"></td>
-                <td th:text="*{transacion.description}"></td>
-                <td th:text="*{transacion.amount}"></td>
-                <td th:text="*{transacion.date}"></td>
+            <tr th:each="transaction: ${transactions}">
+                <td th:text="*{transaction.id}"></td>
+                <td th:text="*{transaction.transactionType.getDescription()}"></td>
+                <td th:text="*{transaction.description}"></td>
+                <td th:text="*{transaction.amount}"></td>
+                <td th:text="*{transaction.date}"></td>
+                <td>
+                    <a th:href="|/updateById?id=*{transaction.id}|" class="btn btn-primary"
+                       role="button" aria-disabled="true">Modyfikuj</a>
+                    <a th:href="|/deletebyid?id=*{transaction.id}|" class="btn btn-danger"
+                       onclick="return confirm('Czy na pewno chcesz usunąć tę transakcję', )"
+                       role="button" aria-disabled="true">Usuń</a>
+
+
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
+    <script>
+        $('#myModal').on('shown.bs.modal', function () {
+            $('#myInput').trigger('focus')
+        })
+    </script>
 </main>
 </body>
 </html>

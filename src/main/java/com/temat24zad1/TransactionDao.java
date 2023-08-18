@@ -1,6 +1,8 @@
 package com.temat24zad1;
 
 import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,18 +10,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TransactionRepository {
+public class TransactionDao {
 
-    Connection connection;
+    private final DataSource dataSource;
 
-    public TransactionRepository() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            this.connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/transactions", "root", "password");
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public TransactionDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public int add(Transaction transaction) {
@@ -27,9 +23,8 @@ public class TransactionRepository {
     }
 
     public Optional<Transaction> findById(Long id) {
-        try {
-            String sql = "SELECT * From transaction WHERE id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "SELECT * From transaction WHERE id = ?";
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
             ps.setInt(1, Math.toIntExact(id));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -46,9 +41,8 @@ public class TransactionRepository {
 
     public List<Transaction> getTransactionsByType(TransactionType type) {
         List<Transaction> transactions = new ArrayList<>();
-        try {
-            String sql = "SELECT * FROM transaction WHERE type = ?;";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "SELECT * FROM transaction WHERE type = ?;";
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
             ps.setString(1, type.getDescription());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -65,10 +59,9 @@ public class TransactionRepository {
     }
 
     public int delete(int id) {
+        String sql = "DELETE FROM transaction WHERE id = ?;";
         int update;
-        try {
-            String sql = "DELETE FROM transaction WHERE id = ?;";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
             ps.setInt(1, id);
             update = ps.executeUpdate();
         } catch (SQLException e) {
@@ -80,8 +73,7 @@ public class TransactionRepository {
     private int addTransaction(Transaction transaction) {
         String sql = "INSERT INTO transaction (type, description, amount, date) VALUES (?, ?, ?, ?);";
         int update;
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
             ps.setString(1, transaction.getTransactionType().getDescription());
             ps.setString(2, transaction.getDescription());
             ps.setDouble(3, transaction.getAmount());
@@ -96,8 +88,7 @@ public class TransactionRepository {
     private int updateTransaction(Transaction transaction) {
         String sql = "UPDATE transaction SET type = ?, description = ?, amount = ?, date = ? WHERE id = ?;";
         int update;
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = dataSource.getConnection().prepareStatement(sql)) {
             ps.setString(1, transaction.getTransactionType().getDescription());
             ps.setString(2, transaction.getDescription());
             ps.setDouble(3, transaction.getAmount());
