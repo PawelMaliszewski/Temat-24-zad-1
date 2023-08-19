@@ -24,8 +24,8 @@ public class TransactionDao {
 
     public Optional<Transaction> findById(Long id) {
         String sql = "SELECT * From transaction WHERE id = ?";
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, Math.toIntExact(id));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -43,8 +43,8 @@ public class TransactionDao {
     public List<Transaction> getTransactionsByType(TransactionType type) {
         List<Transaction> transactions = new ArrayList<>();
         String sql = "SELECT * FROM transaction WHERE type = ?;";
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, type.getDescription());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -63,8 +63,8 @@ public class TransactionDao {
     public int delete(int id) {
         String sql = "DELETE FROM transaction WHERE id = ?;";
         int update;
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             update = ps.executeUpdate();
         } catch (SQLException e) {
@@ -76,8 +76,8 @@ public class TransactionDao {
     private int addTransaction(Transaction transaction) {
         String sql = "INSERT INTO transaction (type, description, amount, date) VALUES (?, ?, ?, ?);";
         int update;
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, transaction.getTransactionType().getDescription());
             ps.setString(2, transaction.getDescription());
             ps.setDouble(3, transaction.getAmount());
@@ -92,8 +92,8 @@ public class TransactionDao {
     private int updateTransaction(Transaction transaction) {
         String sql = "UPDATE transaction SET type = ?, description = ?, amount = ?, date = ? WHERE id = ?;";
         int update;
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, transaction.getTransactionType().getDescription());
             ps.setString(2, transaction.getDescription());
             ps.setDouble(3, transaction.getAmount());
